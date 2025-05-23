@@ -1,0 +1,61 @@
+services:
+
+
+  # Conteneur pour l'application React (client)
+  client:
+    build: ./client  
+    container_name: react-app
+    ports:
+       - "5174:80"  
+    networks:
+      - fbrain_network
+    environment:
+      - TZ=Europe/Paris
+
+  server:
+    build: ./server 
+    container_name: django-server
+    ports:
+      - "8081:8000"  
+    networks:
+      - fbrain_network
+    environment:
+      - TZ=Europe/Paris
+
+  # Conteneur pour Prometheus 
+  prometheus:
+    build: ./monitoring/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090" 
+    networks:
+      - fbrain_network
+    environment:
+      - TZ=Europe/Paris
+
+  # Conteneur pour Grafana (Monitoring)
+  grafana:
+    build: ./monitoring/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - fbrain_network
+    environment:
+      - TZ=Europe/Paris
+
+  # Conteneur pour Nginx 
+  proxy:
+    build: ./proxy  
+    container_name: nginx-proxy
+    ports:
+      - "80:80"  
+      - "443:443"  
+    networks:
+      - fbrain_network
+    environment:
+      - TZ=Europe/Paris
+
+networks:
+  fbrain_network:
+    driver: bridge
