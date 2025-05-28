@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import "./AddMovie.css";
 
 export default function AddMovie() {
   const [title, setTitle] = useState('');
@@ -14,14 +15,15 @@ export default function AddMovie() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 space-y-4">
+    <form onSubmit={handleSubmit} className="add-form">
       <input
-        className="border p-2 w-full"
+        type="text"
+        className="add-input"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Titre du film"
       />
-      <button className="bg-blue-500 text-white px-4 py-2 rounded">Ajouter</button>
+      <button className="add-button">Ajouter</button>
     </form>
   );
 }
