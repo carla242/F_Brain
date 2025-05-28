@@ -1,6 +1,14 @@
-import React from 'react'
+import React from 'react';
+import LastMovies from './pages/LastMovies';
+import AddMovie from './pages/AddMovie';
 
-export default function App() {
-  return <h1>Hello Vite + React</h1>
+function App() {
+  return (
+    <div>
+      <LastMovies />
+      <AddMovie />
+    </div>
+  );
 }
 
+export default App;
