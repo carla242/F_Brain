@@ -1,29 +1,57 @@
-import React, { useState } from "react";
-import "./AddMovie.css";
+// client/src/pages/AddMovie.jsx
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddMovie() {
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('/api/movies/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title })
-    });
-    setTitle('');
+
+    try {
+      const response = await fetch('http://localhost:8000/add-movie/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+        }),
+      });
+
+      if (response.ok) {
+        navigate('/');
+      } else {
+        const errorData = await response.json();
+        console.error('Erreur serveur :', errorData);
+      }
+    } catch (error) {
+      console.error('Erreur réseau :', error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="add-form">
-      <input
-        type="text"
-        className="add-input"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Titre du film"
-      />
-      <button className="add-button">Ajouter</button>
-    </form>
+    <div>
+      <h2>Ajouter un film</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Titre"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <button type="submit">Ajouter</button>
+      </form>
+    </div>
   );
 }

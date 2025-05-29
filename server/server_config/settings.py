@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django_prometheus',
     'django_celery_results',
     'django_celery_beat',
+    'app_movies',
+    'corsheaders',
 
     # ajoute ici tes apps perso, par exemple:
     # 'movies',
@@ -60,12 +62,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    'corsheaders.middleware.CorsMiddleware',
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'server_config.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Port de Vite
+]
 
 TEMPLATES = [
     {
