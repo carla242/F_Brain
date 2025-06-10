@@ -1,0 +1,93 @@
+name: CI/CD - Best Movies
+
+on:
+  push:
+    branches:
+      - Dev
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: best_movies
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Backend (Django)
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: poetry install
+
+      - name: Run Django tests
+        working-directory: ./server
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/best_movies
+        run: poetry run python manage.py test
+
+      # Frontend (React)
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: yarn install
+
+      - name: Build frontend
+        working-directory: ./client
+        run: yarn build
+
+  cd:
+    name: Continuous Deployment
+    runs-on: ubuntu-latest
+    needs: ci
+    if: ${{ success() }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Merge Dev -> Master
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git fetch origin
+          git checkout Master
+          git merge origin/Dev --no-edit
+          git push origin Master
+
+      - name: Merge Master -> main
+        run: |
+          git fetch origin
+          git checkout main
+          git merge origin/Master --no-edit
+          git push origin main
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker-compose down
+          docker-compose up -d --build
