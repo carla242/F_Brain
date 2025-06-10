@@ -33,3 +33,15 @@ projet DevOps
 ```bash
 docker-compose up --build
 
+fichier GitHub Actions (.github/workflows/cicd.yml) adapté au projet Best Movies, basé sur :
+
+Frontend : React + Vite + Yarn (client)
+
+Backend : Django + Celery + Poetry + PostgreSQL (server)
+
+CI : Tests + Build sur la branche dev
+
+CD : Si tests OK, merge automatique de dev → master, puis main, et déploiement via docker-compose
+
+
+
