@@ -1,4 +1,3 @@
-// client/src/pages/AddMovie.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,8 +9,10 @@ export default function AddMovie() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('Tentative d\'ajout du film :', { title, description });
+
     try {
-      const response = await fetch('http://localhost:8000/add-movie/', {
+      const response = await fetch('/add-movie/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,21 +23,25 @@ export default function AddMovie() {
         }),
       });
 
+      const data = await response.json();
+      console.log('Réponse serveur :', data);
+
       if (response.ok) {
         navigate('/');
+        window.location.reload();
       } else {
-        const errorData = await response.json();
-        console.error('Erreur serveur :', errorData);
+        alert('Erreur lors de l\'ajout du film : ' + JSON.stringify(data));
       }
     } catch (error) {
       console.error('Erreur réseau :', error);
+      alert('Erreur réseau : impossible de contacter le serveur.');
     }
   };
 
   return (
-    <div>
+    <div style={{ padding: '2rem' }}>
       <h2>Ajouter un film</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
         <input
           type="text"
           placeholder="Titre"
@@ -44,11 +49,11 @@ export default function AddMovie() {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        <input
-          type="text"
+        <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          rows={4}
         />
         <button type="submit">Ajouter</button>
       </form>
