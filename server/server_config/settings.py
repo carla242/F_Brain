@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Celery configuration
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
 CELERY_RESULT_BACKEND = "django-db"
@@ -43,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django_prometheus',
     'django_celery_results',
     'django_celery_beat',
@@ -55,14 +58,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
@@ -70,8 +73,28 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'server_config.urls'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Port de Vite
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:8000",
+    "http://localhost",
+    "http://127.0.0.1",
 ]
+CORS_ALLOW_CREDENTIALS = True
+ 
+ 
+ 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:8000",
+    "http://localhost",
+    "http://127.0.0.1"
+]
+ 
+CSRF_COOKIE_DOMAIN = 'localhost'  
+SESSION_COOKIE_DOMAIN = 'localhost'
+ALLOWED_HOSTS = ['*']
+
 
 TEMPLATES = [
     {
@@ -99,7 +122,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'devops_db'),
         'USER': os.getenv('POSTGRES_USER', 'devops_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'devops_pass'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+        'HOST': os.getenv('POSTGRES_HOST', 'db'),
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
@@ -136,8 +159,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
 
 # Par défaut, Django utilise BigAutoField pour les clés primaires
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

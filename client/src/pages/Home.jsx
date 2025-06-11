@@ -6,7 +6,7 @@ export default function Home() {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/movies/')
+    fetch('/api/movies/')
       .then(res => res.json())
       .then(data => setMovies(data));
   }, []);
